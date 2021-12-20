@@ -15,44 +15,46 @@ import com.google.firebase.auth.FirebaseAuth
 class LoginActivity : AppCompatActivity() {
 //    private var myButtonForID: Button? = null
     private lateinit var binding: ActivityLoginBinding
-    private val mAuth: FirebaseAuth? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_login)
+        if (supportActionBar != null) {
+            supportActionBar!!.hide()
+        }
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btLogin.setOnClickListener{
             user_login()
-
         }
     }
 
     private fun user_login() {
         val stringUserEmail: String = binding.etUsername.text.toString()
         val stringPassword: String = binding.etPassword.text.toString()
-        if (stringUserEmail.equals("")) {
-            binding.etUsername.setError("Email is required")
+        if (stringUserEmail == "") {
+            binding.etUsername.error = "Email is required"
             binding.etUsername.requestFocus()
             return
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(stringUserEmail).matches()) {
-            binding.etUsername.setError("Please enter a valid Email")
+            binding.etUsername.error = "Please enter a valid Email"
             binding.etUsername.requestFocus()
             return
         }
-        if (stringPassword.equals("")) {
-            binding.etPassword.setError("Password is required")
+        if (stringPassword == "") {
+            binding.etPassword.error = "Password is required"
             binding.etPassword.requestFocus()
             return
         }
 
-        mAuth!!.signInWithEmailAndPassword(stringUserEmail, stringPassword).addOnCompleteListener { task: Task<AuthResult?> ->
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(stringUserEmail, stringPassword).addOnCompleteListener { task: Task<AuthResult?> ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this, ProfileActivity::class.java)
+                    val intent = Intent(this@LoginActivity, ProfileActivity::class.java)
                     startActivity(intent)
+//                    finish()
                 } else {
-                    Toast.makeText(this, "Failed to login! Please check your credentials", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LoginActivity, "Failed to login! Please check your credentials", Toast.LENGTH_LONG).show()
                 }
         }
     }
